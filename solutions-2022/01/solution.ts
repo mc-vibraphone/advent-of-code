@@ -1,9 +1,10 @@
 export const doAThing = () => {
+
 	const fs = require('node:fs');
 
 	const readline = require('node:readline');
 
-	const rl = readline.createInterface(fs.createReadStream('./data.txt'));
+	const rl = readline.createInterface(fs.createReadStream(`${__dirname}/data.txt`));
 
 	let current_elf_calories = [];
 	let all_calories = [-1];
