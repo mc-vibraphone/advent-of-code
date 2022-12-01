@@ -1,21 +1,37 @@
-const { readFileSync } = require('fs')
+export const doAThing = () => {
+	const fs = require('node:fs');
 
-export const calorieCounting = () => {
-  const data = readFileSync(`${__dirname}/data.txt`, 'utf8').split('\n')
+	const readline = require('node:readline');
 
-  const results = [0]
-  data.forEach(snack => {
-    const calories = parseInt(snack)
-    if (isNaN(calories)) {
-      results.push(0)
-    } else {
-      results[results.length - 1] = results[results.length - 1] + calories
-    }
-  })
+	const rl = readline.createInterface(fs.createReadStream('./data.txt'));
 
-  results.sort((a, b) => b - a)
+	let current_elf_calories = [];
+	let all_calories = [-1];
 
-  const answer1 = results[0]
-  const answer2 = results.slice(0, 3).reduce((sum, val) => sum + val, 0)
-  return [answer1, answer2]
+	rl.on('line', (line) => {
+		if("" == line) {
+			let total_calories = 0;
+			current_elf_calories.forEach((calorie) => {
+				total_calories += calorie;
+			});
+
+			all_calories.every((this_one, idx) => {
+				if(total_calories >= this_one) {
+					all_calories.splice(idx, 0, total_calories);
+					return false;
+				}
+				return true;
+			});
+			current_elf_calories = [];
+		}
+		else {
+			current_elf_calories.push(parseInt(line));
+		}
+	});
+
+	rl.on('close', ()=> {
+		console.log("EOF");
+		console.log(`Highest calorie count is ${all_calories[0]}`);
+		console.log(`3 highest calorie counts are ${all_calories[0]} :: ${all_calories[1]} :: ${all_calories[2]} :: ${all_calories.slice(0, 3).reduce((sum, value) => sum + value)}`);
+	});
 }
